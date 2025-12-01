@@ -11,6 +11,11 @@ from datetime import datetime, timedelta
 from typing import Optional, List, Dict, Any
 import base64
 from email.mime.text import MIMEText
+try:
+    from zoneinfo import ZoneInfo
+except ImportError:
+    from backports.zoneinfo import ZoneInfo
+import time
 
 # Configure logging
 logger = logging.getLogger("LifeAdminAgent.GoogleTools")
@@ -96,6 +101,9 @@ def create_calendar_event(
         
         end_dt = start_dt + timedelta(hours=duration_hours)
         
+        # Get local timezone - use Asia/Kolkata for IST
+        local_tz = 'Asia/Kolkata'
+        
         # Build event body
         event = {
             'summary': title,
@@ -103,11 +111,11 @@ def create_calendar_event(
             'description': description,
             'start': {
                 'dateTime': start_dt.isoformat(),
-                'timeZone': 'America/Los_Angeles',
+                'timeZone': local_tz,
             },
             'end': {
                 'dateTime': end_dt.isoformat(),
-                'timeZone': 'America/Los_Angeles',
+                'timeZone': local_tz,
             },
             'reminders': {
                 'useDefault': False,
